@@ -7,9 +7,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text2.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -31,16 +35,23 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.gafilianog.tikil.ui.shared.TextFieldCreds
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -65,44 +76,50 @@ fun TikilHadirScreen(
     var selectedSpv by rememberSaveable { mutableStateOf(spvList[0]) }
     var isExpanded by rememberSaveable { mutableStateOf(false) }
 
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = modifier
+            .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = "Tikil Hadir",
+            text = "Tikil",
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.displaySmall
         )
 
-        Spacer(modifier = Modifier.padding(8.dp))
-
-        Text(
-            text = "NPP",
-            style = MaterialTheme.typography.bodyLarge
-        )
-
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = npp,
-            onValueChange = { npp = it },
-            placeholder = { Text(text = "e.g. 123456") }
-        )
-
         Spacer(modifier = Modifier.padding(4.dp))
 
-        Text(
-            text = "Password",
-            style = MaterialTheme.typography.bodyLarge
+        TextFieldCreds(
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            ),
+            dataType = "NPP",
+            data = npp,
+            placeholder = "900000",
+            onValueChange = { if (it.length <= 6) npp = it }
         )
 
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = password,
-            onValueChange = { password = it },
-            placeholder = { Text(text = "e.g. asdfgh") }
+        TextFieldCreds(
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            ),
+            dataType = "Password",
+            data = password,
+            placeholder = "asdfgh",
+            onValueChange = { newVal -> password = newVal }
         )
 
         Spacer(modifier = Modifier.padding(4.dp))
@@ -190,18 +207,18 @@ fun TikilHadirScreen(
             )
         }
 
-        Spacer(modifier = Modifier.padding(4.dp))
-
-        Text(
-            text = "Reason",
-            style = MaterialTheme.typography.bodyLarge
-        )
-
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = reason,
-            onValueChange = { password = it },
-            placeholder = { Text(text = "E-Absensi tidak dapat digunakan") }
+        TextFieldCreds(
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            ),
+            dataType = "Reason",
+            data = reason,
+            placeholder = "E-Absensi tidak dapat digunakan",
+            onValueChange = { newVal -> reason = newVal }
         )
 
         Spacer(modifier = Modifier.padding(4.dp))
@@ -223,9 +240,10 @@ fun TikilHadirScreen(
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) }
             )
 
-            ExposedDropdownMenu(expanded = isExpanded, onDismissRequest = { isExpanded = false }) {
+            ExposedDropdownMenu(modifier = Modifier.fillMaxWidth(), expanded = isExpanded, onDismissRequest = { isExpanded = false }) {
                 spvList.forEachIndexed { index, spv ->
                     DropdownMenuItem(
+                        modifier = Modifier.fillMaxWidth(),
                         text = { Text(text = spv) },
                         onClick = {
                             selectedSpv = spvList[index]
@@ -237,18 +255,18 @@ fun TikilHadirScreen(
             }
         }
 
-        Spacer(modifier = Modifier.padding(4.dp))
-
-        Text(
-            text = "Comment",
-            style = MaterialTheme.typography.bodyLarge
-        )
-
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = comment,
-            onValueChange = { password = it },
-            placeholder = { Text(text = "Mohon approvalnya mas terima kasih") }
+        TextFieldCreds(
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            ),
+            dataType = "Comment",
+            data = comment,
+            placeholder = "Mohon approvalnya mas terima kasih",
+            onValueChange = { newVal -> comment = newVal }
         )
 
         Spacer(modifier = Modifier.padding(8.dp))

@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +22,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             TikilTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    TikilHadirScreen(modifier = Modifier.padding(innerPadding))
+                    TikilHadirScreen(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+                    )
                 }
             }
         }
