@@ -12,24 +12,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTimeFilled
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,12 +46,12 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.gafilianog.tikil.ui.shared.AdvanceTimePicker
+import dev.gafilianog.tikil.ui.shared.ClickableOutlinedTextField
+import dev.gafilianog.tikil.ui.shared.DatePickerModal
 import dev.gafilianog.tikil.ui.shared.TextFieldInputText
-import java.text.SimpleDateFormat
+import dev.gafilianog.tikil.ui.shared.convertMillisToDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showSystemUi = true, device = Devices.PIXEL_4_XL)
@@ -81,11 +78,10 @@ fun TikilHadirScreen(
     var showClockOutPicker by remember { mutableStateOf(false) }
     var selectedClockIn by remember { mutableStateOf(LocalTime.now()) }
     var selectedClockOut by remember { mutableStateOf(LocalTime.now()) }
-//    var showDial by remember { mutableStateOf(true) }
 
     val timePickerState = rememberTimePickerState(
-        initialHour = selectedClockIn.hour,
-        initialMinute = selectedClockIn.minute,
+        initialHour = LocalTime.now().hour,
+        initialMinute = LocalTime.now().minute,
         is24Hour = true
     )
 
@@ -107,24 +103,24 @@ fun TikilHadirScreen(
         Spacer(modifier = Modifier.padding(4.dp))
 
         TextFieldInputText(
+            value = npp,
+            onValueChange = { if (it.length <= 6) npp = it },
+            title = "NPP",
+            placeholder = "900000",
             keyboardActions = KeyboardActions(
                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
             ),
-            dataType = "NPP",
-            data = npp,
-            placeholder = "900000",
-            onValueChange = { if (it.length <= 6) npp = it },
             keyboardType = KeyboardType.Number
         )
 
         TextFieldInputText(
+            value = password,
+            onValueChange = { password = it },
+            title = "Password",
+            placeholder = "asdfgh",
             keyboardActions = KeyboardActions(
                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
             ),
-            dataType = "Password",
-            data = password,
-            placeholder = "asdfgh",
-            onValueChange = { password = it },
             keyboardType = KeyboardType.Password
         )
 
@@ -140,25 +136,20 @@ fun TikilHadirScreen(
                     style = MaterialTheme.typography.bodyLarge
                 )
 
-                OutlinedTextField(
+                ClickableOutlinedTextField(
                     value = selectedClockIn.format(DateTimeFormatter.ofPattern("HH:mm")),
                     onValueChange = {},
-                    modifier = Modifier
-                        .pointerInput(selectedClockIn) {
-                            awaitEachGesture {
-                                awaitFirstDown(pass = PointerEventPass.Initial)
-                                val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
-                                if (upEvent != null)
-                                    showClockInPicker = true
-                            }
-                        },
+                    state = selectedClockIn,
+                    showComponent = { showClockInPicker = true },
+                    placeholder = {},
                     leadingIcon = {
                         Icon(
                             Icons.Filled.AccessTimeFilled,
                             contentDescription = "Clock In",
                             tint = Color.Green
                         )
-                    }
+                    },
+                    trailingIcon = {}
                 )
             }
 
@@ -171,25 +162,31 @@ fun TikilHadirScreen(
                     style = MaterialTheme.typography.bodyLarge
                 )
 
-                OutlinedTextField(
+                ClickableOutlinedTextField(
                     value = clockOut,
-                    onValueChange = { clockOut = it },
+                    onValueChange = {},
+                    state = selectedClockOut,
+                    showComponent = { showClockOutPicker = true },
                     placeholder = { Text(text = "DEFAULT") },
-                    modifier = Modifier
-                        .pointerInput(selectedClockIn) {
-                            awaitEachGesture {
-                                awaitFirstDown(pass = PointerEventPass.Initial)
-                                val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
-                                if (upEvent != null)
-                                    showClockOutPicker = true
-                            }
-                        },
                     leadingIcon = {
                         Icon(
                             Icons.Filled.AccessTimeFilled,
                             contentDescription = "Clock Out",
                             tint = Color.Red
                         )
+                    },
+                    trailingIcon = {
+                        if (clockOut.isNotEmpty()) {
+                            IconButton(onClick = {
+                                clockOut = ""
+                                showClockOutPicker = false
+                            }) {
+                                Icon(
+                                    Icons.Outlined.Cancel,
+                                    contentDescription = "Clear Clock Out"
+                                )
+                            }
+                        }
                     }
                 )
             }
@@ -218,6 +215,7 @@ fun TikilHadirScreen(
                     timePickerState.hour,
                     timePickerState.minute
                 )
+                clockOut = selectedClockOut.format(DateTimeFormatter.ofPattern("HH:mm"))
                 showClockOutPicker = false
             },
             state = timePickerState
@@ -246,7 +244,7 @@ fun TikilHadirScreen(
                     }
                 }
         )
-        
+
         if (showModal) {
             DatePickerModal(
                 onDateSelected = { selectedDate = it },
@@ -255,13 +253,14 @@ fun TikilHadirScreen(
         }
 
         TextFieldInputText(
+            value = reason,
+            onValueChange = { reason = it },
+            title = "Reason",
+            placeholder = "Reason",
             keyboardActions = KeyboardActions(
                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
             ),
-            dataType = "Reason",
-            data = reason,
-            placeholder = "E-Absensi tidak dapat digunakan",
-            onValueChange = { reason = it }
+            keyboardType = KeyboardType.Text
         )
 
         Spacer(modifier = Modifier.padding(2.dp))
@@ -276,14 +275,19 @@ fun TikilHadirScreen(
             onExpandedChange = { isExpanded = !isExpanded }
         ) {
             OutlinedTextField(
-                modifier = Modifier.menuAnchor().fillMaxWidth(),
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth(),
                 value = selectedSpv,
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) }
             )
 
-            ExposedDropdownMenu(modifier = Modifier.fillMaxWidth(), expanded = isExpanded, onDismissRequest = { isExpanded = false }) {
+            ExposedDropdownMenu(
+                modifier = Modifier.fillMaxWidth(),
+                expanded = isExpanded,
+                onDismissRequest = { isExpanded = false }) {
                 spvList.forEachIndexed { index, spv ->
                     DropdownMenuItem(
                         modifier = Modifier.fillMaxWidth(),
@@ -299,13 +303,14 @@ fun TikilHadirScreen(
         }
 
         TextFieldInputText(
+            value = comment,
+            onValueChange = { comment = it },
+            title = "Comment",
+            placeholder = "Comment",
             keyboardActions = KeyboardActions(
                 onDone = { focusManager.clearFocus() }
             ),
-            dataType = "Comment",
-            data = comment,
-            placeholder = "Mohon approvalnya mas terima kasih",
-            onValueChange = { comment = it },
+            keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Done
         )
 
@@ -318,37 +323,4 @@ fun TikilHadirScreen(
             Text(text = "Submit")
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DatePickerModal(
-    onDateSelected: (Long?) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val datePickerState = rememberDatePickerState()
-
-    DatePickerDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = {
-                onDateSelected(datePickerState.selectedDateMillis)
-                onDismiss()
-            }) {
-                Text(text = "OK")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(text = "Cancel")
-            }
-        }
-    ) {
-        DatePicker(state = datePickerState)
-    }
-}
-
-fun convertMillisToDate(millis: Long): String {
-    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    return formatter.format(Date(millis))
 }
