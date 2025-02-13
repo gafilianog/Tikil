@@ -45,11 +45,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.gafilianog.tikil.ui.shared.AdvanceTimePicker
 import dev.gafilianog.tikil.ui.shared.ClickableOutlinedTextField
 import dev.gafilianog.tikil.ui.shared.DatePickerModal
 import dev.gafilianog.tikil.ui.shared.TextFieldInputText
 import dev.gafilianog.tikil.ui.shared.convertMillisToDate
+import dev.gafilianog.tikil.viewmodels.HadirViewModel
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -57,20 +60,20 @@ import java.time.format.DateTimeFormatter
 @Preview(showSystemUi = true, device = Devices.PIXEL_4_XL)
 @Composable
 fun TikilHadirScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: HadirViewModel = viewModel()
 ) {
-    var npp by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var clockIn by remember { mutableStateOf("") }
-    var clockOut by remember { mutableStateOf("") }
-    var reason by remember { mutableStateOf("E-Absensi tidak dapat digunakan") }
-    var comment by remember { mutableStateOf("Mohon approvalnya mas terima kasih") }
+    val npp by viewModel.npp.collectAsStateWithLifecycle()
+    val password by viewModel.password.collectAsStateWithLifecycle()
+    val clockIn by viewModel.clockIn.collectAsStateWithLifecycle()
+    val clockOut by viewModel.clockOut.collectAsStateWithLifecycle()
+    val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
+    val reason by viewModel.reason.collectAsStateWithLifecycle()
+    val selectedSpv by viewModel.selectedSpv.collectAsStateWithLifecycle()
+    val comment by viewModel.comment.collectAsStateWithLifecycle()
 
-    var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showModal by remember { mutableStateOf(false) }
-
     val spvList = listOf("123 - JOHN DOE", "456 - MAX DOE", "789 - HENRY DOE")
-    var selectedSpv by remember { mutableStateOf(spvList[0]) }
     var isExpanded by remember { mutableStateOf(false) }
 
     // Time state
@@ -88,7 +91,7 @@ fun TikilHadirScreen(
     val focusManager = LocalFocusManager.current
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
@@ -104,7 +107,7 @@ fun TikilHadirScreen(
 
         TextFieldInputText(
             value = npp,
-            onValueChange = { if (it.length <= 6) npp = it },
+            onValueChange = { if (it.length <= 6) viewModel.onNppChange(it) },
             title = "NPP",
             placeholder = "900000",
             keyboardActions = KeyboardActions(
@@ -115,7 +118,7 @@ fun TikilHadirScreen(
 
         TextFieldInputText(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = viewModel::onPasswordChange,
             title = "Password",
             placeholder = "asdfgh",
             keyboardActions = KeyboardActions(
@@ -137,7 +140,7 @@ fun TikilHadirScreen(
                 )
 
                 ClickableOutlinedTextField(
-                    value = selectedClockIn.format(DateTimeFormatter.ofPattern("HH:mm")),
+                    value = clockIn,
                     onValueChange = {},
                     state = selectedClockIn,
                     showComponent = { showClockInPicker = true },
@@ -178,7 +181,7 @@ fun TikilHadirScreen(
                     trailingIcon = {
                         if (clockOut.isNotEmpty()) {
                             IconButton(onClick = {
-                                clockOut = ""
+                                viewModel.onClockOutChange("")
                                 showClockOutPicker = false
                             }) {
                                 Icon(
@@ -201,6 +204,7 @@ fun TikilHadirScreen(
                     timePickerState.hour,
                     timePickerState.minute
                 )
+                viewModel.onClockInChange(selectedClockIn.format(DateTimeFormatter.ofPattern("HH:mm")))
                 showClockInPicker = false
             },
             state = timePickerState
@@ -215,7 +219,7 @@ fun TikilHadirScreen(
                     timePickerState.hour,
                     timePickerState.minute
                 )
-                clockOut = selectedClockOut.format(DateTimeFormatter.ofPattern("HH:mm"))
+                viewModel.onClockOutChange(selectedClockOut.format(DateTimeFormatter.ofPattern("HH:mm")))
                 showClockOutPicker = false
             },
             state = timePickerState
@@ -229,7 +233,6 @@ fun TikilHadirScreen(
         OutlinedTextField(
             value = selectedDate?.let { convertMillisToDate(it) } ?: "",
             onValueChange = {},
-            placeholder = { Text(text = "DD/MM/YYYY") },
             trailingIcon = {
                 Icon(Icons.Default.DateRange, contentDescription = "Select Date")
             },
@@ -247,14 +250,14 @@ fun TikilHadirScreen(
 
         if (showModal) {
             DatePickerModal(
-                onDateSelected = { selectedDate = it },
+                onDateSelected = viewModel::onSelectedDateChange,
                 onDismiss = { showModal = false }
             )
         }
 
         TextFieldInputText(
             value = reason,
-            onValueChange = { reason = it },
+            onValueChange = viewModel::onReasonChange,
             title = "Reason",
             placeholder = "Reason",
             keyboardActions = KeyboardActions(
@@ -293,7 +296,7 @@ fun TikilHadirScreen(
                         modifier = Modifier.fillMaxWidth(),
                         text = { Text(text = spv) },
                         onClick = {
-                            selectedSpv = spvList[index]
+                            viewModel.onSelectedSpvChange(spvList[index])
                             isExpanded = false
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
@@ -304,7 +307,7 @@ fun TikilHadirScreen(
 
         TextFieldInputText(
             value = comment,
-            onValueChange = { comment = it },
+            onValueChange = viewModel::onCommentChange,
             title = "Comment",
             placeholder = "Comment",
             keyboardActions = KeyboardActions(
