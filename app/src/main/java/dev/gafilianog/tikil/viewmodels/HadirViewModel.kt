@@ -12,7 +12,7 @@ class HadirViewModel : ViewModel() {
     private val _password = MutableStateFlow("")
     val password = _password.asStateFlow()
 
-    private val _clockIn = MutableStateFlow("")
+    private val _clockIn = MutableStateFlow("08:00")
     val clockIn = _clockIn.asStateFlow()
 
     private val _clockOut = MutableStateFlow("")

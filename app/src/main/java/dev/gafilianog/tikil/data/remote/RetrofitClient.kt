@@ -7,7 +7,7 @@ object RetrofitClient {
 
     private const val BASE_URL = "https://api.github.com/"
 
-    val retrofit by lazy {
+    val retrofit: CypressTikilApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())

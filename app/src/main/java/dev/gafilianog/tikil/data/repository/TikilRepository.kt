@@ -2,7 +2,6 @@ package dev.gafilianog.tikil.data.repository
 
 import dev.gafilianog.tikil.data.remote.RetrofitClient
 import dev.gafilianog.tikil.domain.model.TikilHadirModel
-import dev.gafilianog.tikil.domain.model.TikilSubmitResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
