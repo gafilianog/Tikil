@@ -1,4 +1,4 @@
-package dev.gafilianog.tikil.ui.theme
+package dev.gafilianog.tikil.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build

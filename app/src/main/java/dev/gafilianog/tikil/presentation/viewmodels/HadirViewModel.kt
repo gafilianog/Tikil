@@ -1,10 +1,17 @@
-package dev.gafilianog.tikil.viewmodels
+package dev.gafilianog.tikil.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dev.gafilianog.tikil.data.repository.TikilRepository
+import dev.gafilianog.tikil.domain.model.TikilHadirModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HadirViewModel : ViewModel() {
+class HadirViewModel @Inject constructor(
+    private val repository: TikilRepository
+) : ViewModel() {
 
     private val _npp = MutableStateFlow("")
     val npp = _npp.asStateFlow()
@@ -60,5 +67,27 @@ class HadirViewModel : ViewModel() {
 
     fun onCommentChange(comment: String) {
         _comment.value = comment
+    }
+
+    private fun getDateDiff(): Int {
+        return 0
+    }
+
+    fun submitTikil() {
+        viewModelScope.launch {
+            val result = repository.submitTikil(
+                "",
+                TikilHadirModel(
+                    npp = _npp.value,
+                    password = _password.value,
+                    clockOut = _clockOut.value,
+                    clockIn = _clockIn.value,
+                    dateDiff = getDateDiff(),
+                    reason = _reason.value,
+                    witness = _selectedSpv.value,
+                    comment = _comment.value
+                )
+            )
+        }
     }
 }

@@ -1,4 +1,4 @@
-package dev.gafilianog.tikil.ui.theme
+package dev.gafilianog.tikil.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

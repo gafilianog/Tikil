@@ -1,4 +1,4 @@
-package dev.gafilianog.tikil.ui.shared
+package dev.gafilianog.tikil.presentation.ui.shared
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture

@@ -1,4 +1,4 @@
-package dev.gafilianog.tikil.ui.screens
+package dev.gafilianog.tikil.presentation.ui.screens
 
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -45,14 +45,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.gafilianog.tikil.ui.shared.AdvanceTimePicker
-import dev.gafilianog.tikil.ui.shared.ClickableOutlinedTextField
-import dev.gafilianog.tikil.ui.shared.DatePickerModal
-import dev.gafilianog.tikil.ui.shared.TextFieldInputText
-import dev.gafilianog.tikil.ui.shared.convertMillisToDate
-import dev.gafilianog.tikil.viewmodels.HadirViewModel
+import dev.gafilianog.tikil.presentation.ui.shared.AdvanceTimePicker
+import dev.gafilianog.tikil.presentation.ui.shared.ClickableOutlinedTextField
+import dev.gafilianog.tikil.presentation.ui.shared.DatePickerModal
+import dev.gafilianog.tikil.presentation.ui.shared.TextFieldInputText
+import dev.gafilianog.tikil.presentation.ui.shared.convertMillisToDate
+import dev.gafilianog.tikil.presentation.viewmodels.HadirViewModel
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -61,7 +62,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun TikilHadirScreen(
     modifier: Modifier = Modifier,
-    viewModel: HadirViewModel = viewModel()
+    viewModel: HadirViewModel = hiltViewModel()
 ) {
     val npp by viewModel.npp.collectAsStateWithLifecycle()
     val password by viewModel.password.collectAsStateWithLifecycle()
