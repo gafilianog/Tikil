@@ -7,6 +7,7 @@ import dev.gafilianog.tikil.domain.model.TikilHadirModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
 
 class HadirViewModel @Inject constructor(
@@ -74,20 +75,26 @@ class HadirViewModel @Inject constructor(
     }
 
     fun submitTikil() {
-        viewModelScope.launch {
-            val result = repository.submitTikil(
-                "",
-                TikilHadirModel(
-                    npp = _npp.value,
-                    password = _password.value,
-                    clockOut = _clockOut.value,
-                    clockIn = _clockIn.value,
-                    dateDiff = getDateDiff(),
-                    reason = _reason.value,
-                    witness = _selectedSpv.value,
-                    comment = _comment.value
+        try {
+            viewModelScope.launch {
+                val response = repository.submitTikil(
+                    "",
+                    TikilHadirModel(
+                        npp = _npp.value,
+                        password = _password.value,
+                        clockOut = _clockOut.value,
+                        clockIn = _clockIn.value,
+                        dateDiff = getDateDiff(),
+                        reason = _reason.value,
+                        witness = _selectedSpv.value,
+                        comment = _comment.value
+                    )
                 )
-            )
+            }
+        } catch (e: IOException) {
+
+        } catch (e: Exception) {
+
         }
     }
 }

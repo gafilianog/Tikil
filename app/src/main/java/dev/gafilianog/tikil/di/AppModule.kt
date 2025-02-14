@@ -5,7 +5,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.gafilianog.tikil.data.remote.CypressTikilApiService
-import dev.gafilianog.tikil.data.remote.RetrofitClient
 import dev.gafilianog.tikil.data.repository.TikilRepository
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

@@ -47,7 +47,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.gafilianog.tikil.presentation.ui.shared.AdvanceTimePicker
 import dev.gafilianog.tikil.presentation.ui.shared.ClickableOutlinedTextField
 import dev.gafilianog.tikil.presentation.ui.shared.DatePickerModal
@@ -280,7 +279,7 @@ fun TikilHadirScreen(
         ) {
             OutlinedTextField(
                 modifier = Modifier
-                    .menuAnchor()
+                    .menuAnchor(type, enabled)
                     .fillMaxWidth(),
                 value = selectedSpv,
                 onValueChange = {},
