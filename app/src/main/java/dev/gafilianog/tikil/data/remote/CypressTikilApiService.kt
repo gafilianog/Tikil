@@ -1,7 +1,6 @@
 package dev.gafilianog.tikil.data.remote
 
 import dev.gafilianog.tikil.domain.model.TikilHadirModel
-import dev.gafilianog.tikil.domain.model.TikilSubmitResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
@@ -18,5 +17,5 @@ interface CypressTikilApiService {
     suspend fun triggerCypress(
         @Header("Authorization") authToken: String,
         @Body body: TikilHadirModel
-    ): Response<TikilSubmitResponse>
+    ): Response<Unit>
 }

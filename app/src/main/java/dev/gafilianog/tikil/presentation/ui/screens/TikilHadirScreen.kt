@@ -1,5 +1,6 @@
 package dev.gafilianog.tikil.presentation.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.filled.AccessTimeFilled
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -38,6 +40,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -47,6 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.gafilianog.tikil.domain.model.UiState
 import dev.gafilianog.tikil.presentation.ui.shared.AdvanceTimePicker
 import dev.gafilianog.tikil.presentation.ui.shared.ClickableOutlinedTextField
 import dev.gafilianog.tikil.presentation.ui.shared.DatePickerModal
@@ -72,9 +76,13 @@ fun TikilHadirScreen(
     val selectedSpv by viewModel.selectedSpv.collectAsStateWithLifecycle()
     val comment by viewModel.comment.collectAsStateWithLifecycle()
 
+    val dateDiff by viewModel.dateDiff.collectAsStateWithLifecycle()
+
     var showModal by remember { mutableStateOf(false) }
     val spvList = listOf("123 - JOHN DOE", "456 - MAX DOE", "789 - HENRY DOE")
     var isExpanded by remember { mutableStateOf(false) }
+
+    var showDialog by remember { mutableStateOf(false) }
 
     // Time state
     var showClockInPicker by remember { mutableStateOf(false) }
@@ -89,6 +97,9 @@ fun TikilHadirScreen(
     )
 
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
+
+    val status by viewModel.statusCode.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -279,7 +290,7 @@ fun TikilHadirScreen(
         ) {
             OutlinedTextField(
                 modifier = Modifier
-                    .menuAnchor(type, enabled)
+                    .menuAnchor()
                     .fillMaxWidth(),
                 value = selectedSpv,
                 onValueChange = {},
@@ -320,10 +331,25 @@ fun TikilHadirScreen(
         Spacer(modifier = Modifier.padding(8.dp))
 
         Button(
-            onClick = {},
+            onClick = {
+                viewModel.submitTikil()
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Submit")
+        }
+
+        when (status) {
+            is UiState.Loading -> CircularProgressIndicator()
+            is UiState.Success -> {
+                val code = (status as UiState.Success).data
+                Toast.makeText(context, "Success: $code", Toast.LENGTH_SHORT).show()
+            }
+
+            is UiState.Error -> {
+                val errorMessage = (status as UiState.Error).message
+                Toast.makeText(context, "Error: $errorMessage", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
