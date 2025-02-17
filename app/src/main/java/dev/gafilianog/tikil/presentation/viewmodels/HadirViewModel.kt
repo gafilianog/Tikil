@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.gafilianog.tikil.BuildConfig
 import dev.gafilianog.tikil.data.repository.TikilRepository
-import dev.gafilianog.tikil.domain.model.TikilHadirModel
 import dev.gafilianog.tikil.domain.model.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

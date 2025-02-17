@@ -1,7 +1,5 @@
 package dev.gafilianog.tikil.data.remote
 
-import dev.gafilianog.tikil.domain.model.TikilHadirModel
-import dev.gafilianog.tikil.domain.model.TikilSubmitRequest
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body

@@ -38,7 +38,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideTikilRepository(apiService: CypressTikilApiService, githubToken: String): TikilRepository {
+    fun provideTikilRepository(apiService: CypressTikilApiService): TikilRepository {
         return TikilRepository(apiService)
     }
 }

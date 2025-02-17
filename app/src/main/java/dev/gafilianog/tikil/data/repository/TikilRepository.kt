@@ -1,10 +1,7 @@
 package dev.gafilianog.tikil.data.repository
 
-import android.util.Log
 import dev.gafilianog.tikil.BuildConfig
 import dev.gafilianog.tikil.data.remote.CypressTikilApiService
-import dev.gafilianog.tikil.domain.model.TikilHadirModel
-import dev.gafilianog.tikil.domain.model.TikilSubmitRequest
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
