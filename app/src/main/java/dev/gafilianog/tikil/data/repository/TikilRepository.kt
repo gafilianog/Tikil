@@ -1,28 +1,25 @@
 package dev.gafilianog.tikil.data.repository
 
+import android.util.Log
+import dev.gafilianog.tikil.BuildConfig
 import dev.gafilianog.tikil.data.remote.CypressTikilApiService
 import dev.gafilianog.tikil.domain.model.TikilHadirModel
+import dev.gafilianog.tikil.domain.model.TikilSubmitRequest
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 class TikilRepository @Inject constructor(
-    private val api: CypressTikilApiService,
-    private val githubToken: String
+    private val api: CypressTikilApiService
 ) {
 
-    suspend fun submitTikil(data: TikilHadirModel): Result<Int> {
+    suspend fun submitTikil(jsonBody: String): Result<Int> {
         return try {
+            val requestBody = jsonBody.toRequestBody("application/json".toMediaType())
+
             val response = api.triggerCypress(
-                authToken = githubToken,
-                body = TikilHadirModel(
-                    npp = data.npp,
-                    password = data.password,
-                    clockOut = data.clockOut,
-                    clockIn = data.clockIn,
-                    dateDiff = data.dateDiff,
-                    reason = data.reason,
-                    witness = data.witness,
-                    comment = data.comment
-                )
+                authToken = "Bearer ${BuildConfig.GITHUB_ACTION_TOKEN}",
+                body = requestBody
             )
             if (response.isSuccessful) {
                 Result.success(response.code())

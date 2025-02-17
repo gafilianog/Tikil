@@ -3,13 +3,13 @@ package dev.gafilianog.tikil.presentation.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.gafilianog.tikil.BuildConfig
 import dev.gafilianog.tikil.data.repository.TikilRepository
 import dev.gafilianog.tikil.domain.model.TikilHadirModel
 import dev.gafilianog.tikil.domain.model.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.io.IOException
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -39,17 +39,33 @@ class HadirViewModel @Inject constructor(
     private val _selectedDate = MutableStateFlow<Long?>(System.currentTimeMillis())
     val selectedDate = _selectedDate.asStateFlow()
 
-    private val _dateDiff = MutableStateFlow<Int>(0)
+    private val _dateDiff = MutableStateFlow(0)
     val dateDiff = _dateDiff.asStateFlow()
 
-    private val _reason = MutableStateFlow("")
+    private val _reason = MutableStateFlow("E-Absensi tidak dapat digunakan")
     val reason = _reason.asStateFlow()
 
     private val _selectedSpv = MutableStateFlow("")
     val selectedSpv = _selectedSpv.asStateFlow()
 
-    private val _comment = MutableStateFlow("")
+    private val _spvList = MutableStateFlow<List<String>>(emptyList())
+    val spvList = _spvList
+
+    private val _comment = MutableStateFlow("Mohon approvalnya mas terima kasih")
     val comment = _comment.asStateFlow()
+
+    init {
+        loadSpvList()
+        _selectedSpv.value = _spvList.value[0]
+    }
+
+    private fun loadSpvList() {
+        _spvList.value = listOf(
+            BuildConfig.SPV_1,
+            BuildConfig.SPV_2,
+            BuildConfig.SPV_3
+        )
+    }
 
     fun onNppChange(npp: String) {
         _npp.value = npp
@@ -99,18 +115,22 @@ class HadirViewModel @Inject constructor(
     fun submitTikil() {
         viewModelScope.launch {
             _statusCode.value = UiState.Loading
-            val response = repository.submitTikil(
-                TikilHadirModel(
-                    npp = _npp.value,
-                    password = _password.value,
-                    clockOut = _clockOut.value,
-                    clockIn = _clockIn.value,
-                    dateDiff = _dateDiff.value,
-                    reason = _reason.value,
-                    witness = _selectedSpv.value,
-                    comment = _comment.value
-                )
-            )
+            val jsonBody = """
+                {
+                    "ref": "master",
+                    "inputs": {
+                        "npp": "${_npp.value}",
+                        "password": "${_password.value}",
+                        "clock_out": "${_clockOut.value}",
+                        "clock_in": "${_clockIn.value}",
+                        "date_diff": "${_dateDiff.value}",
+                        "reason": "${_reason.value}",
+                        "witness": "${_selectedSpv.value}",
+                        "comment": "${_comment.value}"
+                    }
+                }
+            """.trimIndent()
+            val response = repository.submitTikil(jsonBody)
             _statusCode.value = if (response.isSuccess) {
                 UiState.Success(response.getOrNull()!!)
             } else {

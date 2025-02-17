@@ -74,15 +74,16 @@ fun TikilHadirScreen(
     val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
     val reason by viewModel.reason.collectAsStateWithLifecycle()
     val selectedSpv by viewModel.selectedSpv.collectAsStateWithLifecycle()
+    val spvList by viewModel.spvList.collectAsStateWithLifecycle()
     val comment by viewModel.comment.collectAsStateWithLifecycle()
 
-    val dateDiff by viewModel.dateDiff.collectAsStateWithLifecycle()
+//    val dateDiff by viewModel.dateDiff.collectAsStateWithLifecycle()
 
     var showModal by remember { mutableStateOf(false) }
-    val spvList = listOf("123 - JOHN DOE", "456 - MAX DOE", "789 - HENRY DOE")
+//    val spvList = listOf("123 - JOHN DOE", "456 - MAX DOE", "789 - HENRY DOE")
     var isExpanded by remember { mutableStateOf(false) }
 
-    var showDialog by remember { mutableStateOf(false) }
+//    var showDialog by remember { mutableStateOf(false) }
 
     // Time state
     var showClockInPicker by remember { mutableStateOf(false) }

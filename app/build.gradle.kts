@@ -21,10 +21,13 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val properties: Properties = Properties()
+        val properties = Properties()
         properties.load(project.rootProject.file("local.properties").inputStream())
 
         buildConfigField("String", "GITHUB_ACTION_TOKEN", "\"${properties.getProperty("GITHUB_ACTION_TOKEN")}\"")
+        buildConfigField("String", "SPV_1", "\"${properties.getProperty("SPV_1")}\"")
+        buildConfigField("String", "SPV_2", "\"${properties.getProperty("SPV_2")}\"")
+        buildConfigField("String", "SPV_3", "\"${properties.getProperty("SPV_3")}\"")
     }
 
     buildTypes {
@@ -63,6 +66,7 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.okhttp)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

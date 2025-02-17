@@ -1,6 +1,8 @@
 package dev.gafilianog.tikil.data.remote
 
 import dev.gafilianog.tikil.domain.model.TikilHadirModel
+import dev.gafilianog.tikil.domain.model.TikilSubmitRequest
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
@@ -16,6 +18,6 @@ interface CypressTikilApiService {
     @POST("repos/gafilianog/cypress-tikil/actions/workflows/main.yml/dispatches")
     suspend fun triggerCypress(
         @Header("Authorization") authToken: String,
-        @Body body: TikilHadirModel
+        @Body body: RequestBody
     ): Response<Unit>
 }
